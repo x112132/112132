@@ -1,0 +1,165 @@
+//******qwdlgmanual.h******
+#ifndef QWDLGMANUAL_H
+#define QWDLGMANUAL_H
+
+#include <QDialog>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QPlainTextEdit>
+#include <QPushButton>
+
+class QWDlgManual : public QDialog
+{
+    Q_OBJECT
+
+public:
+    QWDlgManual(QWidget *parent = nullptr);
+    ~QWDlgManual();
+
+private:
+    QCheckBox   *chkBoxUnder;
+    QCheckBox   *chkBoxItalic;
+    QCheckBox   *chkBoxBold;
+
+    QRadioButton    *rBtnBlack;
+    QRadioButton    *rBtnRed;
+    QRadioButton    *rBtnBlue;
+
+    QPlainTextEdit  *textEdit;
+
+    QPushButton     *btnOk;
+    QPushButton     *btnCancle;
+    QPushButton     *btnClose;
+
+    void iniUI();
+    void iniSignalSlots();
+
+private slots:
+    void on_chkBoxUnder(bool checked);
+    void on_chkBoxItalic(bool checked);
+    void on_chkBoxBold(bool checked);
+    void setTextFontColor();
+};
+
+#endif // QWDLGMANUAL_H
+
+//******qwdlgmanual.cpp******
+#include "qwdlgmanual.h"
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+
+QWDlgManual::QWDlgManual(QWidget *parent)
+    : QDialog(parent)
+{
+    iniUI();
+    iniSignalSlots();
+    setWindowTitle("From created mannually");
+}
+
+QWDlgManual::~QWDlgManual()
+{
+
+}
+
+void QWDlgManual::iniUI()
+{
+    chkBoxUnder  = new QCheckBox(tr("Underlint"),this);
+    chkBoxItalic = new QCheckBox(tr("Italic"),this);
+    chkBoxBold   = new QCheckBox(tr("Bold"),this);
+
+    QHBoxLayout *HLay1 = new QHBoxLayout;
+    HLay1->addWidget(chkBoxBold);
+    HLay1->addWidget(chkBoxItalic);
+    HLay1->addWidget(chkBoxUnder);
+
+
+    rBtnBlack = new QRadioButton(tr("Black"),this);
+    rBtnBlue = new QRadioButton(tr("Blue"),this);
+    rBtnRed = new QRadioButton(tr("Red"),this);
+
+    rBtnBlack->setChecked(true);
+    QHBoxLayout *HLay2 = new QHBoxLayout;
+    HLay2->addWidget(rBtnBlack);
+    HLay2->addWidget(rBtnBlue);
+    HLay2->addWidget(rBtnRed);
+
+
+    btnCancle = new QPushButton(tr("Cancle"),this);
+    btnOk     = new QPushButton(tr("Ok"),this);
+    btnClose  = new QPushButton(tr("Close"),this);
+
+    QHBoxLayout *HLay3 = new QHBoxLayout;
+    //HLay3->addStretch(1);
+    HLay3->addWidget(btnCancle);
+    //HLay3->addStretch(1);
+    HLay3->addWidget(btnOk);
+    //HLay3->addStretch(1);
+    HLay3->addWidget(btnClose);
+    //HLay3->addStretch(1);
+
+
+    textEdit = new QPlainTextEdit(this);
+    textEdit->setPlainText("Hello World\n\nIt is my demo");
+    QFont font = textEdit->font();
+    font.setPointSize(20);//修改字体大小
+    textEdit->setFont(font);
+
+
+    QVBoxLayout *VLay = new QVBoxLayout();
+    VLay->addLayout(HLay1);
+    VLay->addLayout(HLay2);
+    VLay->addWidget(textEdit);
+    VLay->addLayout(HLay3);
+    this->setLayout(VLay);
+}
+
+void QWDlgManual::iniSignalSlots()
+{
+    connect(rBtnBlack,SIGNAL(clicked()),this,SLOT(setTextFontColor()));
+    connect(rBtnBlue ,SIGNAL(clicked()),this,SLOT(setTextFontColor()));
+    connect(rBtnRed  ,SIGNAL(clicked()),this,SLOT(setTextFontColor()));
+
+    connect(chkBoxBold  ,SIGNAL(clicked(bool)),this,SLOT(on_chkBoxBold(bool)));
+    connect(chkBoxItalic,SIGNAL(clicked(bool)),this,SLOT(on_chkBoxItalic(bool)));
+    connect(chkBoxUnder ,SIGNAL(clicked(bool)),this,SLOT(on_chkBoxUnder(bool)));
+
+    connect(btnCancle,SIGNAL(clicked()),this,SLOT(reject()));
+    connect(btnClose,SIGNAL(clicked()),this,SLOT(close()));
+    connect(btnOk,SIGNAL(clicked()),this,SLOT(accept()));
+}
+
+void QWDlgManual::on_chkBoxUnder(bool checked)//下划线
+{
+    QFont font = textEdit->font();
+    font.setUnderline(checked);
+    textEdit->setFont(font);
+}
+
+void QWDlgManual::on_chkBoxItalic(bool checked)//倾斜
+{
+    QFont font = textEdit->font();
+    font.setItalic(checked);
+    textEdit->setFont(font);
+}
+
+void QWDlgManual::on_chkBoxBold(bool checked)//粗细
+{
+    QFont font = textEdit->font();
+    font.setBold(checked);
+    textEdit->setFont(font);
+}
+
+void QWDlgManual::setTextFontColor()
+{
+    QPalette plet = textEdit->palette();
+    if(rBtnBlack->isChecked())
+        plet.setColor(QPalette::Text,Qt::black);
+    else if(rBtnBlue->isChecked())
+        plet.setColor(QPalette::Text,Qt::blue);
+    else if(rBtnRed->isChecked())
+        plet.setColor(QPalette::Text,Qt::red);
+    else
+        plet.setColor(QPalette::Text,Qt::black);
+
+    textEdit->setPalette(plet);
+}
